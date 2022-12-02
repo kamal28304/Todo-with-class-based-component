@@ -1,7 +1,7 @@
 import {ChangeEvent, Component} from "react";
 import Input from "./Input"
 // import Button from "./Button"
-// import { TiDeleteOutline } from "react-icons/ti"
+import { TiDeleteOutline } from "react-icons/ti"
 // import { render } from "react-dom";
 
 type DoneTodoProps={
@@ -46,9 +46,9 @@ class DoneTodo extends Component<DoneTodoProps>{
         
       {todo.checked==true && <h1 className="text-lg text-green-500 mb-2">{todo.value}</h1>  }
 </div>
-      {/* <div>
-  <TiDeleteOutline onClick={ deleteTodo} className="text-4xl text-red-400"/>
-        </div>*/}
+     <div>
+  <TiDeleteOutline onClick={ this.props.deleteTodo} className="text-4xl text-red-400"/>
+        </div>
     
   </div>
     )

@@ -13,6 +13,7 @@ type TodoState = {
   click: boolean;
   todos: any[]; 
   inputValue: string;
+  doneTodos:any[];
 }
 
 
@@ -23,8 +24,10 @@ class TodoPage extends Component<Todos, TodoState> {
     super(props)
 
     this.onCheckboxClick = this.onCheckboxClick.bind(this)
+    this.onDoneCheckboxClick = this.onDoneCheckboxClick.bind(this)
     this.handleInputChangeValue=this.handleInputChangeValue.bind(this)
     this.deleteTodo = this.deleteTodo.bind(this)
+    this.deleteDoneTodo = this.deleteDoneTodo.bind(this)
     this.openForm = this.openForm.bind(this)
     this.closeForm = this.closeForm.bind(this)
     this.addToDo=this.addToDo.bind(this)
@@ -32,7 +35,9 @@ class TodoPage extends Component<Todos, TodoState> {
     this.state = {
       click: false,
       todos: [],
-      inputValue: ""
+      inputValue: "",
+      doneTodos:[],
+      
     }
   }
 
@@ -42,6 +47,9 @@ class TodoPage extends Component<Todos, TodoState> {
 
   addToDo(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if(this.state.inputValue===""){
+      return;
+    }
     this.setState({ todos: [...this.state.todos, { checked: false, value: this.state.inputValue}],inputValue:"", click:false })
     
   }
@@ -60,7 +68,14 @@ class TodoPage extends Component<Todos, TodoState> {
     console.log("todo is ",todo)
     const filteredTodo =
       this.state.todos.filter((t) => t.value !== todo.value)
-    this.setState({ todos: [...filteredTodo, todo] })
+    this.setState({ todos: filteredTodo,doneTodos:[...this.state.doneTodos,todo] })
+
+  }
+  onDoneCheckboxClick(todo:Todos) {
+    console.log("todo is ",todo)
+    const filteredTodo =
+      this.state.todos.filter((t) => t.value !== todo.value)
+    this.setState({ doneTodos: filteredTodo,todos:[...this.state.todos,todo] })
 
   }
   
@@ -71,10 +86,16 @@ class TodoPage extends Component<Todos, TodoState> {
     console.log("newTodo", newTodo)
     this.setState({ todos: [...newTodo] });
   }
-
+ deleteDoneTodo(index: number) {
+    const newTodo = this.state.doneTodos
+    console.log("newTodo", newTodo)
+    newTodo.splice(index, 1)
+    console.log("newTodo", newTodo)
+    this.setState({ doneTodos: [...newTodo] });
+  }
   
   render(): React.ReactNode {
-    const { todos, inputValue, click } = this.state;
+    const { todos, inputValue, click,doneTodos } = this.state;
 
 
     return (
@@ -124,25 +145,23 @@ class TodoPage extends Component<Todos, TodoState> {
           </form>}
 
           {!click && <Button className="hover:bg-green-400 bg-indigo-500 mt-5" onClick={this.openForm}>Add ToDo +</Button>}
-          {todos.length > 0 && <h1 className="text-xl font-serif font-bold text-gray-700 my-3">Things Done</h1>}
+          {doneTodos.length > 0 && <h1 className="text-xl font-serif font-bold text-gray-700 my-3">Things Done</h1>}
 
-          {todos.filter((t) => {
-            return t.checked !== false;
-          }).map((item) => {
+          {doneTodos.map((item,index) => {
             return (
 
               <DoneTodo
                 key={item.value}
                 todo={item}
-                onClick={this.onCheckboxClick}
-              // deleteTodo={() => deleteTodo(index)}
+                onClick={this.onDoneCheckboxClick}
+              deleteTodo={() => this.deleteDoneTodo(index)}
               />
             )
           })}
 
 
 
-          {todos.length == 0 && <h1 className="text-xl font-serif font-bold text-gray-700 my-3">No todos here!</h1>}
+          {doneTodos.length == 0 && <h1 className="text-xl font-serif font-bold text-gray-700 my-3">No todos here!</h1>}
         </div>
       </div>
     );
